@@ -15,6 +15,8 @@ app.post('/test', (req, res) => {
 });
 
 app.post('/', (req, res) => {
+	console.log('Got:', req.body);
+	
 	const botResponse = 'yo my realest niggas ever';
 	const options = {
 		method: 'post',
@@ -25,13 +27,14 @@ app.post('/', (req, res) => {
 		}
 	};
 
-	axios(options)
-		.then(response => {
-			res.send({ msg: 'ok' });
-		})
-		.catch(err => {
-			res.sendStatus(500);
-		});
+	// axios(options)
+	// 	.then(response => {
+	// 		res.send({ msg: 'ok' });
+	// 	})
+	// 	.catch(err => {
+	// 		res.sendStatus(500);
+	// 	});
+	res.send({ msg: 'ok' });
 });
 
 app.listen(PORT, () => {
