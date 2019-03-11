@@ -1,22 +1,24 @@
 {
-  "name": "groupme-bot",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "engines": {
-	  "node": "10.0.0"
-  },
-  "scripts": {
-	  "dev": "nodemon index.js",
-	  "start": "node index.js"
-  },
-  "devDependencies": {
-	"eslint": "^5.15.1",
-	"nodemon": "^1.18.10"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "body-parser": "^1.18.3",
-    "express": "^4.16.4"
-  }
+ "name": "groupme-bot",
+ "version": "1.0.0",
+ "main": "index.js",
+ "license": "MIT",
+ "engines": {
+  "node": "10.0.0"
+ },
+ "scripts": {
+  "dev": "nodemon index.js",
+  "start": "node index.js"
+ },
+ "devDependencies": {
+  "eslint": "^5.15.1",
+  "nodemon": "^1.18.10"
+ },
+ "dependencies": {
+  "axios": "^0.18.0",
+  "body-parser": "^1.18.3",
+  "express": "^4.16.4",
+  "lodash": "^4.17.11",
+  "mongoose": "^5.4.18"
+ }
 }
