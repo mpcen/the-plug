@@ -3,10 +3,11 @@ const { BetModel, NextBetIdModel } = require('../db');
 function betsAdd(data, name) {
 	return new Promise((resolve, reject) => {
 		if(!data.length) {
-			reject(`
+			return reject(
+				`
 				\nYou must add a bet criteria\n
-			`);
-			return;
+				`
+			);
 		}
 
 		NextBetIdModel.findOneAndUpdate({}, {$inc: { nextBetId: 1 }}, (err, doc) => {
@@ -40,43 +41,21 @@ function betsView() {
 
 		BetModel.countDocuments({ active: true }, (err, count) => {
 			if(!count) {
-				reject(`
+				return reject(`
 					\nThere are no active bets\n	
 				`);
-				return;
 			}
 
 			BetModel.find({ active: true }, (err, docs) => {
 				betResponses = docs.map(({ id, createdBy, data }) => {
 					return `
-						\nID:&nbsp;${id}\n
-						CREATED BY:&nbsp;${createdBy}\n
-						CRITERIA:&nbsp;${data}\n
+						\nID: ${id}\nCREATED BY: ${createdBy}\nCRITERIA: ${data}\n
 					`;
 				});
 
-				resolve(betResponses);
-				return;
+				return resolve(betResponses);
 			});
 		});
-	
-		this.bets.forEach(({ id, data, createdBy, active }) => {
-			if(active) {
-				betResponses.push(`
-					\nID:&nbsp;${id}\n
-					CREATED BY:&nbsp;${createdBy}\n
-					CRITERIA:&nbsp;${data}\n
-				`);
-			}
-		});
-	
-		if(!betResponses.length) {
-			return `
-				\nThere are no active bets\n
-			`;
-		} 
-	
-		return betResponses;
 	});
 }
 
