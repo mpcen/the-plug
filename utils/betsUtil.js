@@ -84,12 +84,11 @@ function betsRemove(betId) {
 }
 
 function betsHelp() {
-	return Promise.resolve(`
-		\nBelow are the available commands for !bets:\n
-		!bets add BET_CRITERIA_HERE\n
-		!bets view\n
-		!bets remove BET_ID\n
-	`);
+	return Promise.resolve(
+		`
+		\nBelow are the available commands for !bets:\n!bets add BET_CRITERIA_HERE\n!bets view\n!bets remove BET_ID\n
+		`
+	);
 }
 
 module.exports = {
