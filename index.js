@@ -6,7 +6,7 @@ const
 	PORT = process.env.PORT || 5113;
 
 const
-	{ BOT_ID } = require('./config'),
+	{ BOT_ID } = require('./config/keys'),
 	Bot = require('./Bot'),
 	bot = new Bot(BOT_ID),
 	BOT_POST_URI = 'https://api.groupme.com/v3/bots/post';
