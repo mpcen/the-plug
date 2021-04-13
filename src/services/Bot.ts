@@ -122,7 +122,7 @@ export class Bot {
     }
 
     private async help() {
-        return `Available Commands:\n!help\n!bets\n\n- List all bets: !bets list\n\n- Add a new bet: !bets add NEW BET CRITERIA\n\n- Remove a bet:\n- First get the bet ID: !bets list\n\n- Then remove the bet using that id: !bets remove BET_ID`;
+        return `Available Commands:\n!help\n!status\n!bets\n\n- List all bets: !bets list\n\n- Add a new bet: !bets add NEW BET CRITERIA\n\n- Remove a bet:\n- First get the bet ID: !bets list\n\n- Then remove the bet using that id: !bets remove BET_ID`;
     }
 
     private async status() {
