@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { BetType, LeanBetDocument } from '../models/bet';
-import { ActionMap, BetActionMap, CommandMap, HelpActionMap } from './MapTypes';
+import { ActionMap, BetActionMap, CommandMap, NoActionMap } from './MapTypes';
 import { MongooseClient } from './MongooseClient';
 
 type ActionCallback = (name: string, data: string) => Promise<any>;
@@ -62,7 +62,7 @@ export class Bot {
     }
 
     private initCommands(): CommandMap {
-        const helpActionMap: HelpActionMap = {
+        const helpActionMap: NoActionMap = {
             '': this.help,
         };
         const betsActionMap: BetActionMap = {
@@ -70,10 +70,14 @@ export class Bot {
             add: this.addBet,
             remove: this.removeBet,
         };
+        const statusActionMap = {
+            '': this.status,
+        };
 
         return {
             '!help': helpActionMap,
             '!bets': betsActionMap,
+            '!status': statusActionMap,
         };
     }
 
@@ -82,16 +86,13 @@ export class Bot {
         const activeBets: LeanBetDocument[] = await this.dbClient.getAllActiveBets();
 
         if (!activeBets.length) {
-            return '>There are currently no active bets';
+            return 'There are currently no active bets';
         }
 
         activeBets.forEach((activeBets) => {
-            responses.push(`
-                ID: ${activeBets.id}
-                Created By: ${activeBets.createdBy}
-                Created On: ${activeBets.createdAt}
-                Criteria: ${activeBets.data}
-            `);
+            responses.push(
+                `ID: ${activeBets.id}\nCreated By: ${activeBets.createdBy}\nCreated On: ${activeBets.createdAt}\nCriteria: ${activeBets.data}`
+            );
         });
 
         return responses.join('');
@@ -100,13 +101,12 @@ export class Bot {
     private async addBet(name: string, data: string) {
         const createdBet: BetType = await this.dbClient.createBet(name, data);
 
-        return `Created new bet with ID: ${createdBet.id}
-            Criteria: ${createdBet.data}`;
+        return `Created new bet with ID: ${createdBet.id}\nCriteria: ${createdBet.data}`;
     }
 
     private async removeBet(name: string, betId: string) {
         if (isNaN(Number(betId))) {
-            return `>Invalid Bet ID: ${betId}`;
+            return `Invalid Bet ID: ${betId}`;
         }
 
         const removedBet: LeanBetDocument = await this.dbClient.removeBet(
@@ -115,26 +115,17 @@ export class Bot {
         );
 
         if (!removedBet) {
-            return `>No bet with ID: ${betId} was found`;
+            return `No bet with ID: ${betId} was found`;
         }
 
-        return `Removed bet with ID: ${removedBet.id}
-            Removed by: ${name}
-            Criteria: ${removedBet.data}`;
+        return `Removed bet with ID: ${removedBet.id}\nRemoved by: ${name}\nCriteria: ${removedBet.data}`;
     }
 
     private async help() {
-        return `Available Commands:
-              !help
-              !bets
+        return `Available Commands:\n!help\n!bets\n\n- List all bets: !bets list\n\n- Add a new bet: !bets add NEW BET CRITERIA\n\n- Remove a bet:\n- First get the bet ID: !bets list\n\n- Then remove the bet using that id: !bets remove BET_ID`;
+    }
 
-            - List all bets: !bets list
-
-            - Add a new bet: !bets add NEW BET CRITERIA
-
-            - Remove a bet:
-              - First get the bet ID: !bets list
-              - Then remove the bet using that id: !bets remove BET_ID
-        `;
+    private async status() {
+        return `Bout that action. Straight cash homie`;
     }
 }

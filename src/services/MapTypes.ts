@@ -1,4 +1,4 @@
-export type HelpActionMap = {
+export type NoActionMap = {
     '': () => Promise<string>;
 };
 
@@ -8,9 +8,10 @@ export type BetActionMap = {
     remove: (name: string, betId: string) => Promise<string>;
 };
 
-export type ActionMap = HelpActionMap | BetActionMap;
+export type ActionMap = NoActionMap | BetActionMap;
 
 export type CommandMap = {
-    '!help': HelpActionMap;
+    '!help': NoActionMap;
     '!bets': BetActionMap;
+    '!status': NoActionMap;
 };
