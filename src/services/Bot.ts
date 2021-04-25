@@ -70,14 +70,18 @@ export class Bot {
             add: this.addBet,
             remove: this.removeBet,
         };
-        const statusActionMap = {
+        const statusActionMap: NoActionMap = {
             '': this.status,
         };
+        const searchActionMap: NoActionMap = {
+            '': this.search,
+        }
 
         return {
             '!help': helpActionMap,
             '!bets': betsActionMap,
             '!status': statusActionMap,
+            '!search': searchActionMap
         };
     }
 
@@ -121,11 +125,15 @@ export class Bot {
         return `Removed bet with ID: ${removedBet.id}\nRemoved by: ${name}\nCriteria: ${removedBet.data}`;
     }
 
-    private async help() {
-        return `Available Commands:\n!help\n!status\n!bets\n\n- List all bets: !bets list\n\n- Add a new bet: !bets add NEW BET CRITERIA\n\n- Remove a bet:\n- First get the bet ID: !bets list\n\n- Then remove the bet using that id: !bets remove BET_ID`;
+    private help() {
+        return `COMMANDS:\n--------\n!help\n!status\n!bets\n!search\n\nACTIONS:\n--------\n* !bets list: Lists all bets\n* !bets add NEW BET CRITERIA: Adds a new bet\n* !search: Returns the search page\n* !bets remove BET_ID: Removes a bet. You must first get the bet id using !bets list\n* !status: Returns the bot status\n* !help: Shows available commands and actions`;
     }
 
-    private async status() {
+    private status() {
         return `Bout that action. Straight cash homie`;
+    }
+
+    private search() {
+        return `Search page --> ${process.env.SEARCH_CLIENT_URI}`;
     }
 }
