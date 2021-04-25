@@ -40,6 +40,14 @@ export class MongooseClient {
         await new Message(props).save();
     }
 
+    public async getMessages(searchText: string) {
+        const messages = await Message.find({
+            text: { $regex: searchText, $options: 'i' },
+        });
+
+        return messages;
+    }
+
     private async getNextBetId() {
         const betIdDoc: LeanBetIdType = await BetId.findOne({}).lean();
 
