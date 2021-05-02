@@ -1,8 +1,8 @@
-import axios from 'axios';
-
-import { BetType, LeanBetDocument } from '../models/bet';
-import { ActionMap, BetActionMap, CommandMap, NoActionMap } from './MapTypes';
-import { MongooseClient } from './MongooseClient';
+import axios from "axios";
+import { BetType, LeanBetDocument } from "../models/bet";
+import { ActionMap, BetActionMap, CommandMap, NoActionMap } from "./MapTypes";
+import { MongooseClient } from "./MongooseClient";
+import { formatRelative, subDays } from "date-fns";
 
 type ActionCallback = (name: string, data: string) => Promise<any>;
 type BotOptions = {
@@ -11,7 +11,7 @@ type BotOptions = {
 };
 
 export class Bot {
-    private GROUPME_POST_URI = 'https://api.groupme.com/v3/bots/post';
+    private GROUPME_POST_URI = "https://api.groupme.com/v3/bots/post";
     private commandMap: CommandMap;
     private dbClient: MongooseClient;
     private botId: string;
@@ -47,7 +47,7 @@ export class Bot {
     public async respond(message: string) {
         try {
             await axios({
-                method: 'POST',
+                method: "POST",
                 url: this.GROUPME_POST_URI,
                 data: {
                     bot_id: this.botId,
@@ -63,7 +63,7 @@ export class Bot {
 
     private initCommands(): CommandMap {
         const helpActionMap: NoActionMap = {
-            '': this.help,
+            "": this.help,
         };
         const betsActionMap: BetActionMap = {
             list: this.listActiveBets,
@@ -71,17 +71,17 @@ export class Bot {
             remove: this.removeBet,
         };
         const statusActionMap: NoActionMap = {
-            '': this.status,
+            "": this.status,
         };
         const searchActionMap: NoActionMap = {
-            '': this.search,
-        }
+            "": this.search,
+        };
 
         return {
-            '!help': helpActionMap,
-            '!bets': betsActionMap,
-            '!status': statusActionMap,
-            '!search': searchActionMap
+            "!help": helpActionMap,
+            "!bets": betsActionMap,
+            "!status": statusActionMap,
+            "!search": searchActionMap,
         };
     }
 
@@ -90,16 +90,21 @@ export class Bot {
         const activeBets: LeanBetDocument[] = await this.dbClient.getAllActiveBets();
 
         if (!activeBets.length) {
-            return 'There are currently no active bets';
+            return "There are currently no active bets";
         }
 
         activeBets.forEach((activeBets) => {
             responses.push(
-                `ID: ${activeBets.id}\nCreated By: ${activeBets.createdBy}\nCreated On: ${activeBets.createdAt}\nCriteria: ${activeBets.data}`
+                `ID: ${activeBets.id}\n* Created By: ${
+                    activeBets.createdBy
+                }\n* Created: ${formatRelative(
+                    subDays(new Date(activeBets.createdAt), 3),
+                    new Date(activeBets.createdAt)
+                )}\n* Criteria: ${activeBets.data}\n\n\n`
             );
         });
 
-        return responses.join('');
+        return responses.join("");
     }
 
     private async addBet(name: string, data: string) {
