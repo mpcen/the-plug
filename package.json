@@ -4,7 +4,10 @@
     "main": "index.js",
     "license": "MIT",
     "scripts": {
-        "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts ",
+        "dev": "ts-node-dev --respawn --transpile-only ./src/index.ts",
+        "dev:local": "env-cmd -f ./.env.local npm run dev",
+        "dev:pre": "env-cmd -f ./.env.pre npm run dev",
+        "dev:prod": "env-cmd -f ./.env.prod npm run dev",
         "start": "node ./dist/index.js",
         "build": "tsc"
     },
@@ -13,6 +16,7 @@
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",
         "date-fns": "^2.21.1",
+        "env-cmd": "^10.1.0",
         "express": "^4.16.4",
         "mongoose": "^5.12.1"
     },
