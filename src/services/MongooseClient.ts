@@ -1,6 +1,6 @@
-import { Bet, BetType, LeanBetDocument } from '../models/bet';
-import { BetId, LeanBetIdType } from '../models/betId';
-import { Message, MessageProps } from '../models/message';
+import { Bet, BetType, LeanBetDocument } from "../models/bet";
+import { BetId, LeanBetIdType } from "../models/betId";
+import { Message, MessageDoc } from "../models/message";
 
 export class MongooseClient {
     public async getAllActiveBets() {
@@ -17,7 +17,7 @@ export class MongooseClient {
             id: nextBetId,
             createdAt: new Date().toISOString(),
             createdBy: name,
-            removedBy: '',
+            removedBy: "",
             active: true,
             data,
         };
@@ -36,16 +36,22 @@ export class MongooseClient {
         return removedBet;
     }
 
-    public async storeMessage(props: MessageProps) {
+    public async storeMessage(props: MessageDoc) {
         await new Message(props).save();
     }
 
     public async getMessages(searchText: string) {
         const messages = await Message.find({
-            text: { $regex: searchText, $options: 'i' },
+            text: { $regex: searchText, $options: "i" },
         });
+        const sortedMessages = messages.sort(
+            (mA: MessageDoc, mB: MessageDoc) => {
+                if (mA.created_at < mB.created_at) return 1;
+                return -1;
+            }
+        );
 
-        return messages;
+        return sortedMessages;
     }
 
     private async getNextBetId() {

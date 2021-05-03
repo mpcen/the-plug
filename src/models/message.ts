@@ -1,21 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export enum FileType {
-    file = 'file',
-    image = 'image',
+    file = "file",
+    image = "image",
 }
 
-type FileAttachment = {
+export type FileAttachment = {
     type: FileType.file;
     file_id: string;
 };
 
-type ImageAttachment = {
+export type ImageAttachment = {
     type: FileType.image;
     url: string;
 };
 
-export type MessageProps = {
+export interface MessageDoc extends mongoose.Document {
     id: string;
     created_at: number;
     name: string;
@@ -28,9 +28,9 @@ export type MessageProps = {
     sender_type: string;
     source_guid: string;
     system: boolean;
-};
+}
 
-const messageSchema = new mongoose.Schema({
+const messageSchema = new mongoose.Schema<MessageDoc>({
     id: String,
     created_at: Number,
     name: String,
@@ -50,9 +50,6 @@ const messageSchema = new mongoose.Schema({
     system: Boolean,
 });
 
-const Message: mongoose.Model<mongoose.Document<MessageProps>> = mongoose.model(
-    'Message',
-    messageSchema
-);
+const Message = mongoose.model<MessageDoc>("Message", messageSchema);
 
 export { Message };
