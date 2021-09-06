@@ -1,9 +1,9 @@
 export type NoActionMap = {
-    '': () => string;
+    "": () => string;
 };
 
 export type BetActionMap = {
-    list: () => Promise<string>;
+    list: () => Promise<string[] | string>;
     add: (name: string, data: string) => Promise<string>;
     remove: (name: string, betId: string) => Promise<string>;
 };
@@ -11,8 +11,8 @@ export type BetActionMap = {
 export type ActionMap = NoActionMap | BetActionMap;
 
 export type CommandMap = {
-    '!help': NoActionMap;
-    '!bets': BetActionMap;
-    '!status': NoActionMap;
-    '!search': NoActionMap;
+    "!help": NoActionMap;
+    "!bets": BetActionMap;
+    "!status": NoActionMap;
+    "!search": NoActionMap;
 };

@@ -39,11 +39,23 @@ export class Bot {
     ) {
         const actionMap: ActionMap = this.commandMap[command];
         const callback = actionMap[action] as ActionCallback;
-        const response = await callback.call(this, name, data);
 
-        return await this.respond(response);
+        if (action === "list") {
+            const responses = await callback.call(this, name, data);
+
+            for (const response of responses) {
+                await this.respond(response);
+            }
+
+            return responses.join("");
+        } else {
+            const response = await callback.call(this, name, data);
+
+            return await this.respond(response);
+        }
     }
 
+    // axios bot message client
     public async respond(message: string) {
         try {
             await axios({
@@ -86,8 +98,10 @@ export class Bot {
     }
 
     private async listActiveBets() {
+        const MAX_BET_GROUP = 2;
         let responses: string[] = [];
-        const activeBets: LeanBetDocument[] = await this.dbClient.getAllActiveBets();
+        const activeBets: LeanBetDocument[] =
+            await this.dbClient.getAllActiveBets();
 
         if (!activeBets.length) {
             return "There are currently no active bets";
@@ -104,7 +118,7 @@ export class Bot {
             );
         });
 
-        return responses.join("");
+        return responses;
     }
 
     private async addBet(name: string, data: string) {
