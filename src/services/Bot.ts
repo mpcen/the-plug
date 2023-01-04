@@ -93,12 +93,10 @@ export class Bot {
             "!help": helpActionMap,
             "!bets": betsActionMap,
             "!status": statusActionMap,
-            "!search": searchActionMap,
         };
     }
 
     private async listActiveBets() {
-        const MAX_BET_GROUP = 2;
         let responses: string[] = [];
         const activeBets: LeanBetDocument[] =
             await this.dbClient.getAllActiveBets();
@@ -145,7 +143,7 @@ export class Bot {
     }
 
     private help() {
-        return `COMMANDS:\n--------\n!help\n!status\n!bets\n!search\n\nACTIONS:\n--------\n* !bets list: Lists all bets\n* !bets add NEW BET CRITERIA: Adds a new bet\n* !search: Returns the search page\n* !bets remove BET_ID: Removes a bet. You must first get the bet id using !bets list\n* !status: Returns the bot status\n* !help: Shows available commands and actions`;
+        return `COMMANDS:\n--------\n!help\n!status\n!bets\n\nACTIONS:\n--------\n* !bets list: Lists all bets\n* !bets add NEW BET CRITERIA: Adds a new bet\n* !bets remove BET_ID: Removes a bet. You must first get the bet id using !bets list\n* !status: Returns the bot status\n* !help: Shows available commands and actions`;
     }
 
     private status() {

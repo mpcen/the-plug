@@ -2,14 +2,11 @@ import { Router } from "express";
 
 import { ActionMap, CommandMap } from "../services/MapTypes";
 import { Bot } from "../services/Bot";
-import { Logger } from "../services/Logger";
 import { MongooseClient } from "../services/MongooseClient";
-import { MessageDoc } from "../models/message";
 
 const router = Router();
 const dbClient = new MongooseClient();
 const bot = new Bot({ botId: process.env.BOT_ID as string, dbClient });
-const logger = new Logger(dbClient);
 
 router.get("/", async (req, res) => {
     res.send(200);
@@ -17,8 +14,6 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
     const { sender_type, name, text } = req.body;
-
-    await logger.logMessage(req.body as MessageDoc);
 
     if (sender_type !== "bot") {
         const textSplit: [keyof CommandMap, keyof ActionMap] = text.split(" ");

@@ -14,5 +14,4 @@ export type CommandMap = {
     "!help": NoActionMap;
     "!bets": BetActionMap;
     "!status": NoActionMap;
-    "!search": NoActionMap;
 };

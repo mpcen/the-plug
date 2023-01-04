@@ -4,7 +4,6 @@ import cors from "cors";
 
 import { messageRouter } from "./routes/message";
 import { membersRouter } from "./routes/members";
-import { searchRouter } from "./routes/search";
 
 const app = express();
 
@@ -14,7 +13,6 @@ app.use(json());
 
 app.use("/message", messageRouter);
 app.use("/members", membersRouter);
-app.use("/search", searchRouter);
 
 app.get("/", (req, res) => res.send("ok"));
 
