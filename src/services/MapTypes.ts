@@ -8,10 +8,15 @@ export type BetActionMap = {
     remove: (name: string, betId: string) => Promise<string>;
 };
 
-export type ActionMap = NoActionMap | BetActionMap;
+export type RandomizeActionMap = {
+    "": (name: string, data: string) => string;
+};
+
+export type ActionMap = NoActionMap | BetActionMap | RandomizeActionMap;
 
 export type CommandMap = {
     "!help": NoActionMap;
     "!bets": BetActionMap;
     "!status": NoActionMap;
+    "!randomize": RandomizeActionMap;
 };

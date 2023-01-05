@@ -20,6 +20,20 @@ router.post("/", async (req, res) => {
         const [maybeCommand, maybeAction] = textSplit;
 
         if (bot.hasCommand(maybeCommand)) {
+            if (bot.hasCommandButNoAction(maybeCommand)) {
+                const command = maybeCommand;
+                const data = textSplit.slice(1).join(" ");
+
+                const response = await bot.work(
+                    command,
+                    "" as never,
+                    data,
+                    name
+                );
+
+                return res.send(response);
+            }
+
             if (bot.hasAction(maybeCommand, maybeAction ?? "")) {
                 const command = maybeCommand;
                 const action = maybeAction ?? "";
@@ -27,7 +41,7 @@ router.post("/", async (req, res) => {
 
                 const response = await bot.work(command, action, data, name);
 
-                res.send(response);
+                return res.send(response);
             }
         }
     } else {

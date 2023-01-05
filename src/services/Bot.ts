@@ -1,6 +1,12 @@
 import axios from "axios";
 import { BetType, LeanBetDocument } from "../models/bet";
-import { ActionMap, BetActionMap, CommandMap, NoActionMap } from "./MapTypes";
+import {
+    ActionMap,
+    BetActionMap,
+    CommandMap,
+    NoActionMap,
+    RandomizeActionMap,
+} from "./MapTypes";
 import { MongooseClient } from "./MongooseClient";
 import { formatRelative, subDays } from "date-fns";
 
@@ -29,6 +35,10 @@ export class Bot {
     public hasAction(command: keyof CommandMap, action: keyof ActionMap) {
         const actionMap: ActionMap = this.commandMap[command];
         return actionMap[action];
+    }
+
+    public hasCommandButNoAction(command: keyof CommandMap) {
+        return command === "!randomize";
     }
 
     public async work(
@@ -85,15 +95,54 @@ export class Bot {
         const statusActionMap: NoActionMap = {
             "": this.status,
         };
-        const searchActionMap: NoActionMap = {
-            "": this.search,
+        const randomizeActionMap: RandomizeActionMap = {
+            "": this.randomize,
         };
 
         return {
             "!help": helpActionMap,
             "!bets": betsActionMap,
             "!status": statusActionMap,
+            "!randomize": randomizeActionMap,
         };
+    }
+
+    private randomize(name: string, data: string) {
+        let [numberOfTeams, ...players] = data.split(" ");
+        const numberOfPlayers = players.length;
+        const teams = [];
+
+        console.log("Players Before:", players);
+
+        // http://en.wikipedia.org/wiki/Fisher-Yates_shuffle#The_modern_algorithm
+        for (let i = players.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+
+            [players[i], players[j]] = [players[j], players[i]];
+        }
+
+        for (let i = 0; i < Number(numberOfTeams); i++) {
+            const [...teamMembers] = players.splice(
+                0,
+                numberOfPlayers / Number(numberOfTeams)
+            );
+
+            teams.push(teamMembers);
+        }
+
+        let message = "";
+
+        for (let i = 0; i < teams.length; i++) {
+            let teamMessage = `TEAM ${i + 1}: `;
+
+            for (let j = 0; j < numberOfPlayers / Number(numberOfTeams); j++) {
+                teamMessage += teams[i][j] + " ";
+            }
+
+            message += teamMessage + "\n";
+        }
+
+        return message;
     }
 
     private async listActiveBets() {
@@ -143,7 +192,7 @@ export class Bot {
     }
 
     private help() {
-        return `COMMANDS:\n--------\n!help\n!status\n!bets\n\nACTIONS:\n--------\n* !bets list: Lists all bets\n* !bets add NEW BET CRITERIA: Adds a new bet\n* !bets remove BET_ID: Removes a bet. You must first get the bet id using !bets list\n* !status: Returns the bot status\n* !help: Shows available commands and actions`;
+        return `COMMANDS:\n--------\n!help\n!status\n!bets\n!randomize\n\nACTIONS:\n--------\n* !bets list: Lists all bets\n* !bets add NEW BET CRITERIA: Adds a new bet\n* !bets remove BET_ID: Removes a bet. You must first get the bet id using !bets list\n* !status: Returns the bot status\n* !randomize TEAM_SIZE PLAYERS: Example: !randomize 2 p1 p2 p3 p4\n* !help: Shows available commands and actions`;
     }
 
     private status() {
