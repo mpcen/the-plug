@@ -8,7 +8,7 @@ import {
     RandomizeActionMap,
 } from "./MapTypes";
 import { MongooseClient } from "./MongooseClient";
-import { formatRelative, subDays } from "date-fns";
+import { formatRelative } from "date-fns";
 
 type ActionCallback = (name: string, data: string) => Promise<any>;
 type BotOptions = {
@@ -159,8 +159,8 @@ export class Bot {
                 `ID: ${activeBets.id}\n* Created By: ${
                     activeBets.createdBy
                 }\n* Created: ${formatRelative(
-                    subDays(new Date(activeBets.createdAt), 3),
-                    new Date(activeBets.createdAt)
+                    new Date(activeBets.createdAt),
+                    new Date()
                 )}\n* Criteria: ${activeBets.data}\n\n\n`
             );
         });
