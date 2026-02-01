@@ -13,40 +13,44 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const { sender_type, name, text } = req.body;
+    try {
+        const { sender_type, name, text } = req.body;
 
-    console.log(`[${new Date().toISOString()}] Incoming message:`, { sender_type, name, text });
+        console.log(`[${new Date().toISOString()}] Incoming message:`, { sender_type, name, text });
 
-    // Respond immediately to avoid GroupMe timeout
-    res.sendStatus(200);
+        // Respond immediately to avoid GroupMe timeout
+        res.sendStatus(200);
 
-    if (sender_type !== "bot") {
-        const textSplit: [keyof CommandMap, keyof ActionMap] = text.split(" ");
-        const [maybeCommand, maybeAction] = textSplit;
+        if (sender_type !== "bot" && text) {
+            const textSplit: [keyof CommandMap, keyof ActionMap] = text.split(" ");
+            const [maybeCommand, maybeAction] = textSplit;
 
-        console.log(`[${new Date().toISOString()}] Parsed:`, { maybeCommand, maybeAction });
+            console.log(`[${new Date().toISOString()}] Parsed:`, { maybeCommand, maybeAction });
 
-        if (bot.hasCommand(maybeCommand)) {
-            console.log(`[${new Date().toISOString()}] Command found: ${maybeCommand}`);
-            if (bot.hasCommandButNoAction(maybeCommand)) {
-                const command = maybeCommand;
-                const data = textSplit.slice(1).join(" ");
+            if (bot.hasCommand(maybeCommand)) {
+                console.log(`[${new Date().toISOString()}] Command found: ${maybeCommand}`);
+                if (bot.hasCommandButNoAction(maybeCommand)) {
+                    const command = maybeCommand;
+                    const data = textSplit.slice(1).join(" ");
 
-                await bot.work(command, "" as never, data, name);
-                console.log(`[${new Date().toISOString()}] Command executed: ${command}`);
-                return;
-            }
+                    await bot.work(command, "" as never, data, name);
+                    console.log(`[${new Date().toISOString()}] Command executed: ${command}`);
+                    return;
+                }
 
-            if (bot.hasAction(maybeCommand, maybeAction ?? "")) {
-                const command = maybeCommand;
-                const action = maybeAction ?? "";
-                const data = textSplit.slice(2).join(" ");
+                if (bot.hasAction(maybeCommand, maybeAction ?? "")) {
+                    const command = maybeCommand;
+                    const action = maybeAction ?? "";
+                    const data = textSplit.slice(2).join(" ");
 
-                await bot.work(command, action, data, name);
-                console.log(`[${new Date().toISOString()}] Command executed: ${command} ${action}`);
-                return;
+                    await bot.work(command, action, data, name);
+                    console.log(`[${new Date().toISOString()}] Command executed: ${command} ${action}`);
+                    return;
+                }
             }
         }
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] Error processing message:`, error);
     }
 });
 
