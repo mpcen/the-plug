@@ -1,0 +1,7 @@
+{
+    auto_https off
+}
+
+:80 {
+    reverse_proxy the-plug-server:5113
+}

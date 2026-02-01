@@ -1,0 +1,60 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  # === INFRASTRUCTURE ===
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: the-plug-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    logging: *default-logging
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - the-plug-network
+    depends_on:
+      - caddy
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: the-plug-caddy
+    restart: unless-stopped
+    logging: *default-logging
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - the-plug-network
+    depends_on:
+      server:
+        condition: service_healthy
+
+  # === BACKEND API ===
+  server:
+    build: .
+    container_name: the-plug-server
+    restart: unless-stopped
+    logging: *default-logging
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5113/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - the-plug-network
+
+networks:
+  the-plug-network:
+    name: the-plug-network
+
+volumes:
+  caddy_data:
+  caddy_config:
