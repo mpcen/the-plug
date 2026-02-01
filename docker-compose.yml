@@ -40,6 +40,8 @@ services:
     container_name: the-plug-server
     restart: unless-stopped
     logging: *default-logging
+    environment:
+      - NODE_ENV=production
     env_file:
       - .env
     healthcheck:
