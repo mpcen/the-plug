@@ -15,6 +15,8 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     const { sender_type, name, text } = req.body;
 
+    console.log(`[${new Date().toISOString()}] Incoming message:`, { sender_type, name, text });
+
     // Respond immediately to avoid GroupMe timeout
     res.sendStatus(200);
 
@@ -22,12 +24,16 @@ router.post("/", async (req, res) => {
         const textSplit: [keyof CommandMap, keyof ActionMap] = text.split(" ");
         const [maybeCommand, maybeAction] = textSplit;
 
+        console.log(`[${new Date().toISOString()}] Parsed:`, { maybeCommand, maybeAction });
+
         if (bot.hasCommand(maybeCommand)) {
+            console.log(`[${new Date().toISOString()}] Command found: ${maybeCommand}`);
             if (bot.hasCommandButNoAction(maybeCommand)) {
                 const command = maybeCommand;
                 const data = textSplit.slice(1).join(" ");
 
                 await bot.work(command, "" as never, data, name);
+                console.log(`[${new Date().toISOString()}] Command executed: ${command}`);
                 return;
             }
 
@@ -37,6 +43,7 @@ router.post("/", async (req, res) => {
                 const data = textSplit.slice(2).join(" ");
 
                 await bot.work(command, action, data, name);
+                console.log(`[${new Date().toISOString()}] Command executed: ${command} ${action}`);
                 return;
             }
         }
