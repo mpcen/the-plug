@@ -198,8 +198,4 @@ export class Bot {
     private status() {
         return `Bout that action. Straight cash homie`;
     }
-
-    private search() {
-        return `Search page --> ${process.env.SEARCH_CLIENT_URI}`;
-    }
 }

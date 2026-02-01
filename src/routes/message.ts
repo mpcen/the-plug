@@ -15,6 +15,9 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     const { sender_type, name, text } = req.body;
 
+    // Respond immediately to avoid GroupMe timeout
+    res.sendStatus(200);
+
     if (sender_type !== "bot") {
         const textSplit: [keyof CommandMap, keyof ActionMap] = text.split(" ");
         const [maybeCommand, maybeAction] = textSplit;
@@ -24,14 +27,8 @@ router.post("/", async (req, res) => {
                 const command = maybeCommand;
                 const data = textSplit.slice(1).join(" ");
 
-                const response = await bot.work(
-                    command,
-                    "" as never,
-                    data,
-                    name
-                );
-
-                return res.send(response);
+                await bot.work(command, "" as never, data, name);
+                return;
             }
 
             if (bot.hasAction(maybeCommand, maybeAction ?? "")) {
@@ -39,13 +36,10 @@ router.post("/", async (req, res) => {
                 const action = maybeAction ?? "";
                 const data = textSplit.slice(2).join(" ");
 
-                const response = await bot.work(command, action, data, name);
-
-                return res.send(response);
+                await bot.work(command, action, data, name);
+                return;
             }
         }
-    } else {
-        res.sendStatus(301);
     }
 });
 
